@@ -1,6 +1,8 @@
 from html import escape
 from typing import List, Optional
 
+from textnode import TextType
+
 
 class HTMLNode:
     def __init__(
@@ -26,7 +28,7 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self, tag=None, value=None, props=None):
-        super().__init__(tag, value, props)
+        super().__init__(tag=tag, value=value, props=props)
 
     def to_html(self):
         if self.value is None:
@@ -41,3 +43,24 @@ class LeafNode(HTMLNode):
 
         else:
             return f"<{self.tag}{props_html}>{escaped_value}</{self.tag}>"
+
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag=None, children=None, props: Optional[dict] = None):
+        super().__init__(tag=tag, children=children, props=props)
+
+    def to_html(self):
+        if self.children is None:
+            raise ValueError("Children are required")
+
+        if self.tag is None:
+            raise ValueError("Tag is required")
+
+        else:
+            # Convert all children nodes to HTML recursively
+            children_html = "".join(child.to_html() for child in self.children)
+
+            # Properly format the attributes, escaping special characters
+            props_html = self.props_to_html()
+
+            return f"<{self.tag}{props_html}>{children_html}</{self.tag}>"
