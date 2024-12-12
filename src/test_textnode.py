@@ -12,18 +12,18 @@ class TestTextNode(unittest.TestCase):
     def test_repr(self):
         node = TextNode("This is a text node", TextType.BOLD)
         self.assertEqual(
-            repr(node), "TextNode(This is a text node, bold, None)")
+            repr(node), "TextNode(This is a text node, TextType.BOLD, None)")
 
     def test_repr_with_url(self):
         node = TextNode("This is a text node",
                         TextType.BOLD, "https://example.com")
         self.assertEqual(
-            repr(node), "TextNode(This is a text node, bold, https://example.com)")
+            repr(node), "TextNode(This is a text node, TextType.BOLD, https://example.com)")
 
     def test_repr_with_none_url(self):
         node = TextNode("This is a text node", TextType.BOLD, None)
         self.assertEqual(
-            repr(node), "TextNode(This is a text node, bold, None)")
+            repr(node), "TextNode(This is a text node, TextType.BOLD, None)")
 
 
 if __name__ == "__main__":

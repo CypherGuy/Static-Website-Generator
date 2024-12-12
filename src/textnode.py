@@ -2,12 +2,13 @@ from enum import Enum
 
 
 class TextType(Enum):
-    NORMAL = "normal"
-    BOLD = "bold"
-    ITALIC = "italic"
-    CODE = "code"
-    LINK = "link"
-    IMAGE = "image"
+    TEXT = "TextType.TEXT"
+    BOLD = "TextType.BOLD"
+    ITALIC = "TextType.ITALIC"
+    BOLD_ITALIC = "TextType.BOLD_ITALIC"
+    CODE = "TextType.CODE"
+    LINK = "TextType.LINK"
+    IMAGE = "TextType.IMAGE"
 
 
 class TextNode:
@@ -24,12 +25,3 @@ class TextNode:
     def __repr__(self):
         return (
             f"TextNode({self.text}, {self.text_type.value}, {self.url})")
-
-
-def main():
-    # call the TextNode class
-    node = TextNode("Hello world", TextType.BOLD, "url")
-    print(node)
-
-
-main()
