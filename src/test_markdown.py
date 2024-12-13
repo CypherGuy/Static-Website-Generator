@@ -1,5 +1,6 @@
 import unittest
 from markdown import (
+    block_to_block_type,
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
@@ -207,6 +208,19 @@ This is the same paragraph on a new line
                 "* This is a list\n* with items",
             ],
         )
+
+        block = "# heading"
+        self.assertEqual(block_to_block_type(block), ["heading 1"])
+        block = "```\ncode\n```"
+        self.assertEqual(block_to_block_type(block), ["code"])
+        block = "> quote\n> more quote"
+        self.assertEqual(block_to_block_type(block), ["quote"])
+        block = "* list\n* items"
+        self.assertEqual(block_to_block_type(block), ["ulist"])
+        block = "1. list\n2. items"
+        self.assertEqual(block_to_block_type(block), ["olist"])
+        block = "paragraph"
+        self.assertEqual(block_to_block_type(block), ["paragraph"])
 
 
 if __name__ == "__main__":

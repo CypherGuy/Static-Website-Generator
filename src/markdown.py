@@ -103,3 +103,38 @@ def text_to_textnodes(text):
 def markdown_to_blocks(markdown):
     blocks = markdown.split("\n\n")
     return [block.strip() for block in blocks if block.strip()]
+
+
+def block_to_block_type(markdown):
+    blocks = markdown_to_blocks(markdown)
+    block_types = []
+    for block in blocks:
+        lines = block.split("\n")
+        if block.startswith("###### "):
+            block_types.append("heading 6")
+        elif block.startswith("##### "):
+            block_types.append("heading 5")
+        elif block.startswith("#### "):
+            block_types.append("heading 4")
+        elif block.startswith("### "):
+            block_types.append("heading 3")
+        elif block.startswith("## "):
+            block_types.append("heading 2")
+        elif block.startswith("# "):
+            block_types.append("heading 1")
+        elif block.startswith("```") and block.endswith("```"):
+            block_types.append("code")
+        elif all(line.startswith("* ") or line.startswith("- ") for line in lines):
+            block_types.append("ulist")
+        elif all(line.startswith("> ") for line in lines):
+            block_types.append("quote")
+        elif block.startswith("1. "):
+            i = 1
+            for line in lines:
+                if not line.startswith(f"{i}. "):
+                    block_types.append("paragraph")
+                i += 1
+            block_types.append("olist")
+        else:
+            block_types.append("paragraph")
+    return block_types
