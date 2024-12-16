@@ -1,25 +1,26 @@
 from html import escape
 from typing import List, Optional
-
 from textnode import TextNode, TextType
 
 
 class HTMLNode:
-    def __init__(
-        self, tag: Optional[str] = None, value: Optional[str] = None, children: Optional[List] = None, props: Optional[dict] = None
-    ):
-        self.tag = tag
-        self.value = value
-        self.children = children
-        self.props = props
+    def __init__(self, tag: Optional[str] = None, value: Optional[str] = None, children: Optional[List] = None, props: Optional[dict] = None):
+        # Set defaults for missing arguments
+        # You can default to 'div' if necessary
+        self.tag = tag if tag is not None else None
+        self.value = value if value is not None else None
+        self.children = children if children is not None else []
+        self.props = props if props is not None else {}
 
     def to_html(self):
-        return NotImplementedError("Not implemented")
+        if not self.children:
+            return f"<{self.tag}{self.props_to_html()}></{self.tag}>"
+        children_html = "".join(child.to_html() for child in self.children)
+        return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"
 
     def props_to_html(self):
         if not self.props:
             return ""
-        # Properly format the attributes, escaping special characters
         return "".join(f' {k}="{escape(str(v))}"' for k, v in self.props.items())
 
     def __repr__(self):
@@ -32,17 +33,10 @@ class LeafNode(HTMLNode):
 
     def to_html(self):
         if self.value is None:
-            raise ValueError("Value is required")
-
-        escaped_value = escape(self.value)
+            return ""
+        escaped_value = escape(self.value) if self.value else ""
         props_html = self.props_to_html()
-
-        # Handle different cases
-        if self.tag is None:
-            return escaped_value
-
-        else:
-            return f"<{self.tag}{props_html}>{escaped_value}</{self.tag}>"
+        return f"<{self.tag}{props_html}>{escaped_value}</{self.tag}>" if self.tag else escaped_value
 
 
 class ParentNode(HTMLNode):
@@ -50,20 +44,10 @@ class ParentNode(HTMLNode):
         super().__init__(tag=tag, children=children, props=props)
 
     def to_html(self):
-        if self.children is None:
-            raise ValueError("Children are required")
-
-        if self.tag is None:
-            raise ValueError("Tag is required")
-
-        else:
-            # Convert all children nodes to HTML recursively
-            children_html = "".join(child.to_html() for child in self.children)
-
-            # Properly format the attributes, escaping special characters
-            props_html = self.props_to_html()
-
-            return f"<{self.tag}{props_html}>{children_html}</{self.tag}>"
+        if not self.children:
+            return f"<{self.tag}{self.props_to_html()}></{self.tag}>"
+        children_html = "".join(child.to_html() for child in self.children)
+        return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"
 
 
 def text_node_to_html_node(text_node):
